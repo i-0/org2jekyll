@@ -8,26 +8,45 @@ Blogging with org-mode and jekyll without alien yaml headers.
 
 * Table of Contents                                                     :TOC_4:
  - [[#upgrade][Upgrade]]
-     - [[#012---014][0.1.2 -> 0.1.4]]
+   - [[#012---014][0.1.2 -> 0.1.4]]
  - [[#description][Description]]
-     - [[#rationale][Rationale]]
-     - [[#pre-requisite][Pre-requisite]]
+   - [[#rationale][Rationale]]
+   - [[#pre-requisite][Pre-requisite]]
  - [[#installsetup][Install/Setup]]
-     - [[#install][Install]]
-     - [[#setup][Setup]]
-     - [[#a-working-example][A working example]]
+   - [[#install][Install]]
+   - [[#setup][Setup]]
+   - [[#a-working-example][A working example]]
  - [[#use][Use]]
-     - [[#post][Post]]
-         - [[#headers][Headers]]
-         - [[#publish][Publish]]
-         - [[#how][How]]
-     - [[#page][Page]]
-         - [[#headers][Headers]]
-         - [[#publish][Publish]]
-         - [[#how][How]]
-     - [[#publish-all-posts][Publish all posts]]
-     - [[#publish-all-pages][Publish all pages]]
+   - [[#post][Post]]
+     - [[#headers][Headers]]
+     - [[#publish][Publish]]
+     - [[#how][How]]
+   - [[#page][Page]]
+     - [[#headers][Headers]]
+     - [[#publish][Publish]]
+     - [[#how][How]]
+   - [[#publish-all-posts][Publish all posts]]
+   - [[#publish-all-pages][Publish all pages]]
  - [[#minor-mode][Minor mode]]
+
+* Fork reason
+Adapt logic to personal requirements. Adds MENU parameter in preamble and logic to pass it through to jekyll in the resulting HTML file.
+Here an example:
+#+BEGIN_EXAMPLE
+#+STARTUP: showall
+#+STARTUP: hidestars
+#+OPTIONS: H:2 num:nil tags:nil timestamps:t ^:nil toc:nil
+# This option removes the table of contents before (!) the jekyll preamble "toc:nil"
+# other wise it has to be manually moved after the preamble.
+# Removing the toc can help during initial development of the doc page.
+#+LAYOUT: page
+#+AUTHOR: Foo Bar
+#+DATE: 2015-12-16
+#+TITLE: Here be a title
+#+DESCRIPTION: Details ...
+#+CATEGORIES: documenation, stuff, whatever
+#+MENU: ROOT/Leaf
+#+END_EXAMPLE
 
 * Upgrade
 
