@@ -109,7 +109,7 @@
 (defvar org2jekyll-jekyll-org-post-template nil
   "Default template for org2jekyll draft posts.
 The `'%s`' will be replaced respectively by name, author, generated date, title,
- description and categories.")
+ description, categories and menu.")
 
 (setq org2jekyll-jekyll-org-post-template
       "#+STARTUP: showall
@@ -122,6 +122,7 @@ The `'%s`' will be replaced respectively by name, author, generated date, title,
 #+DESCRIPTION: %s
 #+TAGS: %s
 #+CATEGORIES: %s
+#+MENU: %s
 \n")
 
 (defun org2jekyll--optional-folder (folder-source &optional folder-name)
@@ -160,15 +161,17 @@ The `'%s`' will be replaced respectively by name, author, generated date, title,
                                             post-title
                                             post-description
                                             post-tags
-                                            post-categories)
+                                            post-categories
+                                            post-menu)
   "Compute default headers.
 BLOG-LAYOUT is the layout of the post.
 BLOG-AUTHOR is the author.
 POST-DATE is the date of the post.
 POST-TITLE is the title.
 POST-DESCRIPTION is the description.
-POST-TAGS is the tags
-POST-CATEGORIES is the categories."
+POST-TAGS is the tags.
+POST-CATEGORIES is the categories.
+POST-MENU is the menu."
   (format org2jekyll-jekyll-org-post-template
           blog-layout
           blog-author
@@ -176,7 +179,8 @@ POST-CATEGORIES is the categories."
           (org2jekyll--yaml-escape post-title)
           post-description
           post-tags
-          post-categories))
+          post-categories
+          post-menu))
 
 (defun org2jekyll--draft-filename (draft-dir title)
   "Compute the draft's filename from the DRAFT-DIR and TITLE."
@@ -185,6 +189,10 @@ POST-CATEGORIES is the categories."
 (defun org2jekyll--read-title ()
   "Read the title."
   (read-string "Title: "))
+
+(defun org2jekyll--read-menu ()
+  "Read the menu."
+  (read-string "Menu: "))
 
 (defun org2jekyll--read-description ()
   "Read the description."
@@ -214,7 +222,8 @@ POST-CATEGORIES is the categories."
         :title       (org2jekyll--read-title)
         :description (org2jekyll--read-description)
         :tags        (org2jekyll--read-tags)
-        :categories  (org2jekyll--read-categories)))
+        :categories  (org2jekyll--read-categories)
+        :menu        (org2jekyll--read-menu)))
 
 ;;;###autoload
 (defun org2jekyll-init-current-buffer ()
@@ -227,7 +236,8 @@ POST-CATEGORIES is the categories."
          (title       (plist-get metadata :title))
          (description (plist-get metadata :description))
          (tags        (plist-get metadata :tags))
-         (categories  (plist-get metadata :categories)))
+         (categories  (plist-get metadata :categories))
+         (menu        (plist-get metadata :menu)))
     (save-excursion
       (with-current-buffer (buffer-name)
         (goto-char (point-min))
@@ -237,7 +247,8 @@ POST-CATEGORIES is the categories."
                                                      title
                                                      description
                                                      tags
-                                                     categories))))))
+                                                     categories
+                                                     menu))))))
 
 ;;;###autoload
 (defun org2jekyll-create-draft ()
@@ -253,6 +264,7 @@ The `'%s`' will be replaced respectively by the blog entry name, the author, the
          (description (plist-get metadata :description))
          (tags        (plist-get metadata :tags))
          (categories  (plist-get metadata :categories))
+         (menu        (plist-get metadata :menu))
          (draft-file  (org2jekyll--draft-filename
                        (org2jekyll-input-directory org2jekyll-jekyll-drafts-dir)
                        title)))
@@ -264,7 +276,8 @@ The `'%s`' will be replaced respectively by the blog entry name, the author, the
                                                      title
                                                      description
                                                      tags
-                                                     categories))
+                                                     categories
+                                                     menu))
         (insert "* ")))
     (find-file draft-file)))
 
@@ -332,7 +345,8 @@ Depends on the metadata header #+LAYOUT."
                               ("date"        . "date")
                               ("description" . "excerpt")
                               ("author"      . "author")
-                              ("layout"      . "layout"))
+                              ("layout"      . "layout")
+                              ("menu"        . "menu"))
   "Keys to map from org headers to jekyll's headers.")
 
 (defun org2jekyll--org-to-yaml-metadata (org-metadata)
@@ -403,7 +417,8 @@ Return DEFAULT-VALUE if not found."
                                    ("tags")
                                    ("description" . 'mandatory)
                                    ("author")
-                                   ("layout"      . 'mandatory)))
+                                   ("layout"      . 'mandatory)
+                                   ("menu"        . 'mandatory)))
 
 (defun org2jekyll-check-metadata (org-metadata)
   "Check that the mandatory header metadata in ORG-METADATA are provided.
@@ -454,7 +469,9 @@ Publication skipped" error-messages)
         ("author"      . ,(-> "author"
                               (org2jekyll-assoc-default org-metadata "")))
         ("description" . ,(-> "description"
-                              (org2jekyll-assoc-default org-metadata "")))))))
+                            (org2jekyll-assoc-default org-metadata "")))
+        ("menu"        . ,(-> "menu"
+                            (org2jekyll-assoc-default org-metadata "")))))))
 
 (defun org2jekyll-read-metadata-and-execute (action-fn org-file)
   "Execute ACTION-FN function after checking metadata from the ORG-FILE."
